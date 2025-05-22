@@ -87,28 +87,6 @@ body {
   border-left: 1px solid #333;
 }
 
-/* Float the home button inside the graph */
-#graph-home {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
-  background: #252526;
-  color: #ccc;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 0.4rem 0.6rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-#graph-home:hover {
-  background: #333;
-  color: white;
-}
-
-
 #editor-pane {
   display: flex;
   flex-direction: column;
