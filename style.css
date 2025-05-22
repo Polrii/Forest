@@ -1,0 +1,298 @@
+body {
+  margin: 0;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: monospace;
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 200px;
+  background: #2d2d2d;
+  padding: 1rem;
+  border-right: 1px solid #444;
+  overflow-y: auto;
+}
+
+#sidebar h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+#note-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.note-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  color: #ccc;
+  background: transparent;
+  transition: background 0.2s ease;
+  border-radius: 6px;
+}
+
+.note-item:hover {
+  background: #3a3a3a;
+  color: white;
+}
+
+.note-item.active {
+  background: #4ec9b0;
+  color: #1e1e1e;
+  font-weight: bold;
+}
+
+#container {
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+}
+
+#editor {
+  flex-grow: 1;
+  padding: 1rem;
+  background: #252526;
+  border: none;
+  color: #d4d4d4;
+  font-size: 1rem;
+  resize: none;
+}
+
+#preview {
+  width: 33%;
+  padding: 1rem;
+  background: #1e1e1e;
+  overflow-y: auto;
+  border-left: 1px solid #333;
+}
+
+#graph-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#graph {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  background: #1e1e1e;
+  border-left: 1px solid #333;
+}
+
+/* Float the home button inside the graph */
+#graph-home {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: #252526;
+  color: #ccc;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#graph-home:hover {
+  background: #333;
+  color: white;
+}
+
+
+#editor-pane {
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+  min-width: 200px;
+}
+
+#toolbar {
+  background: #2e2e2e;
+  padding: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid #444;
+}
+
+#toolbar button {
+  background: #3a3a3a;
+  border: none;
+  color: white;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+
+#toolbar button:hover {
+  background: #555;
+}
+
+#editor {
+  flex-grow: 1;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: #cccccc;
+  padding: 0.4rem;
+  margin: 0 0.2rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.icon-button:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+#note-list li.drag-over-top,
+#note-list li.drag-over-bottom {
+  position: relative;
+}
+
+#note-list li.drag-over-top::before,
+#note-list li.drag-over-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #4ec9b0;
+  border-radius: 0; /* no curved corners */
+}
+#note-list li.drag-over-top::before {
+  top: 0;
+}
+
+#note-list li.drag-over-bottom::after {
+  bottom: 0;
+}
+
+.wikilink {
+  color: #4ec9b0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.wikilink:hover {
+  color: #41DADC;
+}
+
+pre code {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: block;
+  overflow-x: auto;
+}
+
+code {
+  background: #2a2a2a;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.95em;
+}
+
+.note-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-options {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+.note-options:hover {
+  color: white;
+}
+
+.note-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  min-width: 120px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.note-menu button {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  color: #ccc;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.note-menu button:hover {
+  background: #333;
+  color: white;
+}
+
+.note-rename-input {
+  background: transparent;
+  border: 1px solid #555;
+  border-radius: 6px;
+  color: #fff;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+
+#graph-toolbar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: right;
+}
+
+#graph-toolbar button {
+  background: #3a3a3a;
+  border: none;
+  color: white;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+
+#graph-toolbar button:hover {
+  background: #555;
+}

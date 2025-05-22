@@ -1,0 +1,24 @@
+[x] Automatic title on each file
+[x] Notes list hover that allows you to see which file you are about to click
+[x] Weird text editor split view
+[x] Wtf is happening with page list??????????????
+[x] Way to reorganize page list
+[x] Enhance reorganization with straight line instead of rounded
+[x] Proper formatting for links
+[x] Links work as direct accesses
+[x] What does the code button do?
+[x] Highlighting all its connections when hovering over a node - It broke all the pages lists 
+[x] Page renaming (We are missing prettier options dropdown)
+[ ] Grid on/off button
+[x] Automatically place new nodes where there are no other nodes
+[x] Remove weird thing where home view is automatically reset when typing on any page
+[ ] Make it so that "tab" can be used, instead of changing the selected window
+[x] Webiste logo
+[x] Delete pages using the supr button
+[ ] Weird functionality when deleating links, as it creates a lot of new pages (maybe auto-delete if page is empty and there is no link)
+[ ] 
+[ ] 
+[ ] 
+[ ] 
+[ ] 
+[ ] Way to add formulas

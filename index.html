@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Obsidian</title>
+  <link rel="icon" type="image/png" href="AppLogo.png">
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="sidebar">
+    <h2>Notes</h2>
+    <ul id="note-list"></ul>
+
+    <button onclick="createNewNote()" title="New Note" class="icon-button">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <div id="container">
+    <div id="editor-pane">
+      <div id="toolbar">
+        <button onclick="format('bold')"><b>B</b></button>
+        <button onclick="format('italic')"><i>I</i></button>
+        <button onclick="format('heading')">H</button>
+        <button onclick="format('code')">Code</button>
+      </div>
+      <textarea id="editor" placeholder="# Write your notes here..."></textarea>
+    </div>
+
+    <div id="preview"></div>
+
+    <div id="graph-container">
+      <div id="graph">
+        <button id="graph-home" onclick="resetGraphView()" title="Reset Graph View">🏠</button>
+      </div>
+      <div id="graph-toolbar">
+        <button onclick="resetGraphView()" title="Home View" class="icon-button">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  
+  <!-- Highlight.js (for syntax highlighting) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
