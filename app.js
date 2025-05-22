@@ -2,6 +2,8 @@ const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const noteList = document.getElementById('note-list');
 const graphContainer = document.getElementById('graph');
+const snapButton = document.getElementById('snap-toggle');
+const snapIcon = document.getElementById('snap-icon');
 
 let notes = JSON.parse(localStorage.getItem('notes')) || {};
 
@@ -21,6 +23,7 @@ let network = null;
 let nodePositions = JSON.parse(localStorage.getItem('positions') || '{}');
 
 let dragSrcEl = null;
+let snapToGrid = false;
 
 marked.setOptions({
   highlight: function(code, lang) {
@@ -197,7 +200,15 @@ function updatePreviewAndGraph() {
     network.on("dragEnd", function (params) {
       if (params.nodes.length) {
         const id = params.nodes[0];
-        const position = network.getPositions([id])[id];
+        let position = network.getPositions([id])[id];
+
+        if (snapToGrid) {
+          const gridSize = 50;
+          position.x = Math.round(position.x / gridSize) * gridSize;
+          position.y = Math.round(position.y / gridSize) * gridSize;
+          network.moveNode(id, position.x, position.y);
+        }
+
         nodePositions[id] = position;
         localStorage.setItem('positions', JSON.stringify(nodePositions));
       }
@@ -269,7 +280,7 @@ function updatePreviewAndGraph() {
     // Update the graph data
     network.setData(data);
 
-    // 🛠 Restore previous view
+    // Restore previous view
     network.moveTo({
       position: view,
       scale: scale,
@@ -546,6 +557,21 @@ function renameNote(oldName, newName) {
   renderNoteList();
 }
 
+function updateSnapToggleIcon() {
+  const snapButton = document.getElementById('snap-toggle');
+  const iconName = snapToGrid ? 'unlock' : 'lock';
+
+  // Replace inner HTML with new icon
+  snapButton.innerHTML = `<i data-feather="${iconName}"></i>`;
+  feather.replace();
+
+  // Reattach click listener after replacing icon
+  snapButton.onclick = () => {
+    snapToGrid = !snapToGrid;
+    snapButton.classList.toggle('active', snapToGrid);
+    updateSnapToggleIcon(); // Recursively update icon + listener
+  };
+}
 
 
 
@@ -569,3 +595,8 @@ document.addEventListener('keydown', (e) => {
   }
 
 });
+
+
+
+updateSnapToggleIcon();
+feather.replace();

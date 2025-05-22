@@ -274,3 +274,16 @@ code {
 #graph-toolbar button:hover {
   background: #555;
 }
+
+#snap-toggle.active {
+  background: #41DADC;
+  color: black;
+}
+
+/* Globally resize feather icons */
+i[data-feather] svg,
+button i svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
