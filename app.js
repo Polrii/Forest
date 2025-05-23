@@ -6,18 +6,17 @@ const snapButton = document.getElementById('snap-toggle');
 const snapIcon = document.getElementById('snap-icon');
 
 let notes = JSON.parse(localStorage.getItem('notes')) || {};
+let nodes, edges;
+
+let currentNote = 'Home';
+let noteOrder = JSON.parse(localStorage.getItem('noteOrder')) || Object.keys(notes);
+
 
 if (!notes['Home']) {
   notes['Home'] = '# Home';
   if (!noteOrder.includes('Home')) noteOrder.push('Home');
     saveNotes();
 }
-
-let nodes, edges;
-
-let currentNote = 'Home';
-let noteOrder = JSON.parse(localStorage.getItem('noteOrder')) || Object.keys(notes);
-
 
 let network = null;
 let nodePositions = JSON.parse(localStorage.getItem('positions') || '{}');
