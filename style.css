@@ -74,17 +74,17 @@ body {
 #graph-container {
   flex: 1;
   position: relative;
-  overflow: hidden;
   display: flex;
-  flex-direction: column;
 }
 
 #graph {
   flex: 1;
   height: 100%;
-  position: relative;
-  background: #1e1e1e;
-  border-left: 1px solid #333;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1; /* lower than grid overlay */
 }
 
 #editor-pane {
@@ -259,6 +259,7 @@ code {
   display: flex;
   gap: 0.5rem;
   justify-content: right;
+  z-index: 3; /* above vis.js canvas and grid overlay */
 }
 
 #graph-toolbar button {
@@ -279,6 +280,22 @@ code {
   background: #41DADC;
   color: black;
 }
+
+#grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2; /* above vis.js canvas, below buttons */
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+
+
+
+
+
+
 
 /* Globally resize feather icons */
 i[data-feather] svg,

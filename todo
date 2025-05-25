@@ -9,7 +9,7 @@
 [x] What does the code button do?
 [x] Highlighting all its connections when hovering over a node - It broke all the pages lists 
 [x] Page renaming (We are missing prettier options dropdown)
-[ ] Grid on/off button
+[x] Grid on/off button
 [x] Automatically place new nodes where there are no other nodes
 [x] Remove weird thing where home view is automatically reset when typing on any page
 [ ] Make it so that "tab" can be used, instead of changing the selected window

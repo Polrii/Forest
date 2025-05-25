@@ -191,6 +191,11 @@ function updatePreviewAndGraph() {
   if (!network) {
     network = new vis.Network(graphContainer, data, options);
 
+    setTimeout(() => {
+      if (snapToGrid) drawGridOverlay(true);
+    }, 50);  // Delay just long enough for graph to render
+
+
     network.on("click", function (params) {
       const nodeId = params.nodes[0];
       if (nodeId) openNote(nodeId);
@@ -269,6 +274,15 @@ function updatePreviewAndGraph() {
         });
       });
     });
+
+    network.on("zoom", () => {
+      if (snapToGrid) drawGridOverlay(true);
+    });
+
+    network.on("dragging", () => {
+      if (snapToGrid) drawGridOverlay(true);
+    });
+
 
 
   } else {
@@ -410,6 +424,13 @@ function resetGraphView() {
       }
     };
     network.fit(options);
+
+    // Redraw grid shortly after animation ends
+    if (snapToGrid) {
+      setTimeout(() => {
+        drawGridOverlay(true);
+      }, 550); // Slightly longer than animation
+    }
   }
 }
 
@@ -568,10 +589,58 @@ function updateSnapToggleIcon() {
   snapButton.onclick = () => {
     snapToGrid = !snapToGrid;
     snapButton.classList.toggle('active', snapToGrid);
+    drawGridOverlay(snapToGrid);
     updateSnapToggleIcon(); // Recursively update icon + listener
   };
 }
 
+function drawGridOverlay(enabled) {
+  const canvas = document.getElementById('grid-overlay');
+  const ctx = canvas.getContext('2d');
+  const gridSize = 50;
+
+  const rect = document.getElementById('graph').getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!enabled || !network) return;
+
+  const scale = network.getScale();
+  const offset = network.getViewPosition(); // in world coordinates
+
+  // Convert DOM origin to world coordinate
+  const topLeft = network.DOMtoCanvas({ x: 0, y: 0 });
+  const bottomRight = network.DOMtoCanvas({ x: canvas.width, y: canvas.height });
+
+  // Snap starting X/Y to nearest grid line in world space
+  const startX = Math.floor(topLeft.x / gridSize) * gridSize;
+  const endX = Math.ceil(bottomRight.x / gridSize) * gridSize;
+  const startY = Math.floor(topLeft.y / gridSize) * gridSize;
+  const endY = Math.ceil(bottomRight.y / gridSize) * gridSize;
+
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 0.5;
+
+  // Vertical lines
+  for (let x = startX; x <= endX; x += gridSize) {
+    const domX = network.canvasToDOM({ x, y: 0 }).x;
+    ctx.beginPath();
+    ctx.moveTo(domX, 0);
+    ctx.lineTo(domX, canvas.height);
+    ctx.stroke();
+  }
+
+  // Horizontal lines
+  for (let y = startY; y <= endY; y += gridSize) {
+    const domY = network.canvasToDOM({ x: 0, y }).y;
+    ctx.beginPath();
+    ctx.moveTo(0, domY);
+    ctx.lineTo(canvas.width, domY);
+    ctx.stroke();
+  }
+}
 
 
 document.addEventListener('keydown', (e) => {
@@ -594,6 +663,11 @@ document.addEventListener('keydown', (e) => {
   }
 
 });
+
+window.addEventListener('resize', () => {
+  if (snapToGrid) drawGridOverlay(true);
+});
+
 
 
 
