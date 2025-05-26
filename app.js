@@ -375,15 +375,37 @@ function format(type) {
       formatted = `# ${selected}`;
       break;
     case 'code':
-      if (selected.includes('\n')) {
-        // Multi-line selection → insert fenced block
-        formatted = `\`\`\`\n${selected}\n\`\`\``;
+      formatted = `\`\`\`\n${selected}\n\`\`\``;
+      break;
+    case 'list':
+      if (start === end) {
+        // No selection: insert "- " and place cursor after it
+        const bullet = '- ';
+        editor.setRangeText(bullet, start, end, 'end');
+
+        // Move the cursor to just after the bullet
+        const newPos = start + bullet.length;
+        setTimeout(() => {
+          editor.setSelectionRange(newPos, newPos);
+          editor.focus();
+        }, 0); // Delay ensures the text is inserted first
       } else {
-        // Inline code
-        formatted = `\`${selected}\``;
+        // Selection: prefix each line with "- "
+        const selectedText = editor.value.substring(start, end);
+        const lines = selectedText.split('\n');
+        const bulleted = lines.map(line => (line.trim() ? `- ${line}` : '')).join('\n');
+
+        editor.setRangeText(bulleted, start, end, 'end');
+        const newPos = start + bulleted.length;
+
+        setTimeout(() => {
+          editor.setSelectionRange(newPos, newPos);
+          editor.focus();
+        }, 0);
       }
       break;
-  }
+    }
+
 
   editor.setRangeText(formatted, start, end, 'end');
   updatePreviewAndGraph();
@@ -668,7 +690,69 @@ window.addEventListener('resize', () => {
   if (snapToGrid) drawGridOverlay(true);
 });
 
+editor.addEventListener('keydown', function (e) {
+  const cursorPos = editor.selectionStart;
 
+  // ENTER: auto-bullet or exit list
+  if (e.key === 'Enter') {
+    const lines = editor.value.slice(0, cursorPos).split('\n');
+    const currentLine = lines[lines.length - 1];
+    const listMatch = currentLine.match(/^(\s*[-*+] )/);
+
+    if (listMatch) {
+      const bullet = listMatch[1];
+      const lineStart = editor.value.lastIndexOf('\n', cursorPos - 1) + 1;
+      const lineText = editor.value.slice(lineStart, cursorPos).trim();
+
+      e.preventDefault();
+
+      if (lineText === bullet.trim()) {
+        // Exit list if current bullet is empty
+        editor.setSelectionRange(lineStart, cursorPos);
+        editor.setRangeText('', lineStart, cursorPos, 'start');
+      } else {
+        // Continue list
+        editor.setRangeText('\n' + bullet, cursorPos, cursorPos, 'end');
+      }
+
+      updatePreviewAndGraph();
+    }
+  }
+
+  // TAB and SHIFT+TAB: indent and unindent
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+
+    const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+    const lineEnd = editor.value.indexOf('\n', start);
+    const fullLineEnd = lineEnd === -1 ? editor.value.length : lineEnd;
+    const line = editor.value.slice(lineStart, fullLineEnd);
+
+    let modifiedLine = line;
+    let newCursorPos = start;
+
+    if (e.shiftKey) {
+      // SHIFT+TAB: Unindent if at least 2 spaces
+      if (line.startsWith('  ')) {
+        modifiedLine = line.slice(2);
+        editor.setRangeText(modifiedLine, lineStart, fullLineEnd, 'start');
+        newCursorPos = start - 2;
+      }
+    } else {
+      // TAB: Indent
+      modifiedLine = '  ' + line;
+      editor.setRangeText(modifiedLine, lineStart, fullLineEnd, 'start');
+      newCursorPos = start + 2;
+    }
+
+    // Move the cursor to its new logical position
+    editor.selectionStart = editor.selectionEnd = newCursorPos;
+    updatePreviewAndGraph();
+  }
+
+});
 
 
 updateSnapToggleIcon();
