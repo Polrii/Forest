@@ -18,10 +18,10 @@
 [ ] Weird functionality when deleating links, as it creates a lot of new pages (maybe auto-delete if page is empty and there is no link)
 [ ] Resize icons
 [ ] Auto-closing of brackets for links
-[ ] Missing separating line next to graph view
+[x] Missing separating line next to graph view
 [ ] Create a basic home file that explains the syntax, etc and says the content can be erased whenever
 [ ] Ctrl+z, ctrl+y
-[ ] 
+[ ] Numbered lists
 [ ] 
 [ ] 
 [ ] 

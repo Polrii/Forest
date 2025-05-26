@@ -339,7 +339,6 @@ function findFreePosition(existingPositions, spacing = 150) {
   return { x: Math.random() * 1000, y: Math.random() * 1000 };
 }
 
-
 function createNewNote() {
   const baseName = "New Note";
   let i = 1;
@@ -355,8 +354,6 @@ function createNewNote() {
   saveNotes();
   openNote(name);
 }
-
-
 
 function format(type) {
   const start = editor.selectionStart;
@@ -410,10 +407,6 @@ function format(type) {
   editor.setRangeText(formatted, start, end, 'end');
   updatePreviewAndGraph();
 }
-
-editor.addEventListener('input', updatePreviewAndGraph);
-
-openNote(currentNote);
 
 function deleteCurrentNote() {
   if (currentNote === 'Home') {
@@ -559,7 +552,6 @@ function renderNoteList() {
   });
 }
 
-
 function saveNotes() {
   localStorage.setItem('notes', JSON.stringify(notes));
   localStorage.setItem('noteOrder', JSON.stringify(noteOrder));
@@ -664,6 +656,11 @@ function drawGridOverlay(enabled) {
   }
 }
 
+
+openNote(currentNote);
+
+
+editor.addEventListener('input', updatePreviewAndGraph);
 
 document.addEventListener('keydown', (e) => {
   // Only act if the Delete key was pressed
