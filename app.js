@@ -11,6 +11,7 @@ let nodes, edges;
 let currentNote = 'Home';
 let noteOrder = JSON.parse(localStorage.getItem('noteOrder')) || Object.keys(notes);
 
+let previousLinks = new Set();
 
 if (!notes['Home']) {
   notes['Home'] = '# Home';
@@ -92,39 +93,70 @@ function parseWikiLinks(text) {
 
 function updatePreviewAndGraph() {
   const content = editor.value;
-  const processed = content.replace(/\[\[([^\]]+)\]\]/g, (match, linkText) => {
-    return `<a href="#" class="wikilink" data-link="${linkText}">${linkText}</a>`;
+  let html = marked.parse(content);
+
+  // Replace [[Link]] with clickable links in the preview pane
+  html = html.replace(/\[\[([^\]\[]+)\]\]/g, (match, linkName) => {
+    return `<a href="#" class="wikilink" data-link="${linkName}">${linkName}</a>`;
   });
 
-  preview.innerHTML = marked.parse(processed);
+  preview.innerHTML = html;
 
-  preview.querySelectorAll('.wikilink').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = e.target.dataset.link;
-      openNote(target);
-    });
-  });
-
-
-
-  // Save current note
   notes[currentNote] = content;
 
-  // Auto-create missing linked notes in ALL notes
-  Object.entries(notes).forEach(([note, content]) => {
-    parseWikiLinks(content).forEach(link => {
-      if (!notes[link]) {
-        notes[link] = `# ${link}`;
-        if (!noteOrder.includes(link)) {
-          noteOrder.push(link);
-        }
+  const currentLinks = new Set(parseWikiLinks(content));
+  const existingNotes = Object.keys(notes);
+  const createdThisPass = new Set();
 
-        // Assign a free position to the new node
-        nodePositions[link] = findFreePosition(nodePositions);
+  // Handle link additions or renames
+  currentLinks.forEach(link => {
+    if (!notes[link]) {
+      // Find longest previous match
+      const candidates = [...existingNotes].filter(name =>
+        link.startsWith(name) &&
+        !currentLinks.has(name) &&
+        !createdThisPass.has(name)
+      );
+
+      if (candidates.length) {
+        // Rename longest previous
+        const oldName = candidates.sort((a, b) => b.length - a.length)[0];
+        let content = notes[oldName];
+
+        // Replace the first heading if it's "# OldName"
+        content = content.replace(/^#\s+.*$/m, `# ${link}`);
+        notes[link] = content;
+
+        delete notes[oldName];
+
+        const idx = noteOrder.indexOf(oldName);
+        if (idx !== -1) noteOrder[idx] = link;
+      } else {
+        notes[link] = `# ${link}`;
+        noteOrder.push(link);
       }
-    });
+
+      createdThisPass.add(link);
+    }
   });
+
+  // Handle link deletions: remove old links no longer used
+  previousLinks.forEach(oldLink => {
+    if (!currentLinks.has(oldLink) && Object.keys(notes).includes(oldLink)) {
+      // Only delete if this link isn't used in any note
+      const usedElsewhere = Object.entries(notes).some(([name, noteText]) =>
+        parseWikiLinks(noteText).includes(oldLink)
+      );
+
+      if (!usedElsewhere && oldLink !== 'Home') {
+        delete notes[oldLink];
+        const idx = noteOrder.indexOf(oldLink);
+        if (idx !== -1) noteOrder.splice(idx, 1);
+      }
+    }
+  });
+
+  previousLinks = currentLinks;
 
   localStorage.setItem('notes', JSON.stringify(notes));
   localStorage.setItem('noteOrder', JSON.stringify(noteOrder));
@@ -401,6 +433,31 @@ function format(type) {
         }, 0);
       }
       break;
+    case 'link':
+      const linkStart = '[[', linkEnd = ']]';
+
+      if (start === end) {
+        // No selection — insert empty link with cursor between brackets
+        editor.setRangeText(`${linkStart}${linkEnd}`, start, end, 'end');
+        const newPos = start + linkStart.length;
+        setTimeout(() => {
+          editor.setSelectionRange(newPos, newPos);
+          editor.focus();
+        }, 0);
+      } else {
+        // Wrap selected text in brackets
+        const selectedText = editor.value.substring(start, end);
+        const linkedText = `${linkStart}${selectedText}${linkEnd}`;
+        editor.setRangeText(linkedText, start, end, 'end');
+
+        const newPos = start + linkedText.length;
+        setTimeout(() => {
+          editor.setSelectionRange(newPos, newPos);
+          editor.focus();
+        }, 0);
+      }
+      break;
+
     }
 
 
@@ -749,7 +806,57 @@ editor.addEventListener('keydown', function (e) {
     updatePreviewAndGraph();
   }
 
+  if (e.key === 'Backspace') {
+    const pos = editor.selectionStart;
+    const before = editor.value.slice(0, pos);
+    const after = editor.value.slice(pos);
+
+    // Check if the last two characters are '[['
+    if (before.endsWith('[[') && after.startsWith(']]')) {
+      e.preventDefault();
+
+      // Remove both [[ and ]] (total of 4 characters)
+      const newBefore = before.slice(0, -2);
+      const newAfter = after.slice(2);
+      editor.value = newBefore + newAfter;
+
+      const newPos = newBefore.length;
+      editor.setSelectionRange(newPos, newPos);
+      updatePreviewAndGraph();
+    }
+  }
+
+
 });
+
+editor.addEventListener('keydown', function (e) {
+  const pos = editor.selectionStart;
+
+  if (e.key === '[') {
+    const prevChar = editor.value.charAt(pos - 1);
+
+    if (prevChar === '[') {
+      // Detected typing of `[[`
+      e.preventDefault();
+      editor.setRangeText('[]]', pos, pos, 'end');
+
+      // Move cursor between the brackets
+      editor.setSelectionRange(pos + 1, pos + 1);
+      updatePreviewAndGraph();
+    }
+  }
+
+  // Keep your other key handlers: Enter, Tab, Shift+Tab, etc.
+});
+
+preview.addEventListener('click', function (e) {
+  if (e.target.classList.contains('wikilink')) {
+    const name = e.target.dataset.link;
+    openNote(name);
+    e.preventDefault();
+  }
+});
+
 
 
 updateSnapToggleIcon();

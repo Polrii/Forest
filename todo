@@ -15,16 +15,20 @@
 [x] Make it so that "tab" can be used, instead of changing the selected window
 [x] Webiste logo
 [x] Delete pages using the supr button
-[ ] Weird functionality when deleating links, as it creates a lot of new pages (maybe auto-delete if page is empty and there is no link)
+[x] Weird functionality when deleating links, as it creates a lot of new pages (maybe auto-delete if page is empty and there is no link)
 [ ] Resize icons
-[ ] Auto-closing of brackets for links
+[x] Auto-closing of brackets for links
 [x] Missing separating line next to graph view
 [ ] Create a basic home file that explains the syntax, etc and says the content can be erased whenever
 [ ] Ctrl+z, ctrl+y
 [ ] Numbered lists
-[ ] 
-[ ] 
-[ ] 
+[ ] Checklists
+[ ] Underlining tool
+[ ] Highlighting tool
+[ ] Crossing tool
+[ ] ctrl+b, i, u, ...
+[ ] Auto-scrolling in viewing tab
+[ ] Weird double-enter needed
 [ ] 
 [ ] 
 [ ] 
